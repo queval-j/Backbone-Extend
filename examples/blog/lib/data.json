@@ -1,0 +1,14 @@
+{
+	"articles": [{
+			"name": "Who am I ?",
+			"author": "Walden Schmitd",
+			"create": 1395326362565,
+			"content": "Walden Thoreau Schmidt is a fictional character in the CBS sitcom Two and a Half Men, portrayed by Ashton Kutcher. The character was introduced in the season nine premiere episode, \"Nice to Meet You, Walden Schmidt\" to replace the character of Charlie Harper after actor Charlie Sheen was fired from the series"
+		},{
+			"name": "Comment je suis devenu milliardaire !",
+			"author": "Steve Jobs",
+			"create": 1395326362565,
+			"content": "Steve Jobs, le co-fondateur d’Apple n’a pu achever ses études : il n’avait pas assez d’argent pour se payer la fac. Heureusement, dans le garage de ses parents adoptifs, au milieu des vergers d’abricots qui deviendront plus tard la Silicon Valley, il invente en 1976 la marque à la pomme qui fera sa fortune. Evincé de l’entreprise en 1985, il crée les studios d’animations Pixar, notamment réalisateurs du film à succès Toy Story. Rappelé chez Apple en 1996, il vend les studios à Disney et cassera la baraque avec le baladeur numérique iPod. Président d’Apple, il siège également au conseil d’administration de Disney et en est l’un des principaux actionnaires."
+		}
+	]
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="/assets/ico/favicon.ico">
+
+    <title>Workshop 3 - My blog</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/css/cover.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="site-wrapper">
+      <div class="site-wrapper-inner">
+        <div class="cover-container">
+          <div class="masthead clearfix">
+            <div class="inner">
+              <h3 class="masthead-brand">My Blog</h3>
+              <ul class="nav masthead-nav">
+                <li data-id="page-home"><a href="#">Home</a></li>
+                <li data-id="page-articles"><a href="#articles">Articles</a></li>
+                <li data-id="page-contact"><a href="#contact">Contact</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="inner cover" id="content"></div>
+
+          <div class="mastfoot">
+            <div class="inner">
+              <p>Cover template for <a href="http://getbootstrap.com">Bootstrap</a>, by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script defer="defer" src="/assets/js/jquery.min.js"></script>
+    <script defer="defer" src="/assets/bootstrap/js/bootstrap.min.js"></script>
+    <script defer="defer" src="/assets/js/underscore.min.js"></script>
+    <script defer="defer" src="/assets/js/backbone.min.js"></script>
+    <script defer="defer" src="/assets/js/backbone.extend.js"></script>
+    <!-- Application --> 
+    <script defer="defer" src="/src/app.js"></script>
+    <!-- Models -->
+    <script defer="defer" src="/src/models/article.js"></script>
+    <!-- Collection -->
+    <script defer="defer" src="/src/collections/articles.js"></script>
+    <!-- Views -->
+    <script defer="defer" src="/src/views/abstract.js"></script>
+    <script defer="defer" src="/src/views/home.js"></script>
+    <script defer="defer" src="/src/views/articles.js"></script>
+    <script defer="defer" src="/src/views/contact.js"></script>
+    <script defer="defer" src="/src/views/article.js"></script>
+    <script defer="defer" src="/src/views/error.js"></script>
+    <!-- Router -->
+    <script defer="defer" src="/src/router/router.js"></script>
+    <!-- Start the app -->
+    <script defer="defer" src="/src/run.js"></script>
+  </body>
+</html>
