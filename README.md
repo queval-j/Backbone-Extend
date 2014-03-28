@@ -1,7 +1,7 @@
 Backbone-Extend
 ===============
 
-Backbon-extend provides new features in order to enhance the Web Application made with Backbone (https://github.com/jashkenas/backbone).
+Backbon-extend provides new features in order to enhance the Web Applications made with Backbone (https://github.com/jashkenas/backbone).
 
 Currently, Backbone-Extend has :
 - Backbone.Application :
