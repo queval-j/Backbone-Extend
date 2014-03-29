@@ -289,5 +289,71 @@
 
 	Backbone.keyboard = new Backbone.Keyboard();
 
+
+	var Cookie = function (name, value) {
+		this._attrs = {
+			"name": name || "",
+			"value": value || ""
+		};
+		Object.defineProperty(this, '_attrs', {
+			"enumerable": false
+		});
+	};
+
+	Cookie.prototype.getName = function () {
+		return (this._attrs['name']);
+	};
+
+	Cookie.prototype.getValue = function () {
+		return (this._attrs['value']);
+	};
+
+	Cookie.prototype.setValue = function (newValue) {
+		this._attrs['value'] = newValue;
+		return (this);
+	};
+
+	Cookie.prototype.save = function (time) { // seconds
+		var expires = new Date();
+		expires.setTime(expires.getTime() + (time * 1000));
+		expires = "expires="+expires.toGMTString();
+		document.cookie = this._attrs['name']+"="+this._attrs['value']+"; "+expires;
+		return (this);
+	};
+
+	Cookie.prototype.update = function () {
+		this._attrs['value'] = this._read(this._attrs['name']);
+		return (this);
+	};
+
+	Cookie.prototype.remove = function () {
+		this.save(-1);
+		return (null);
+	};
+
+	Backbone.Cookie = {
+		get: function (name) {
+			var value = this.read(name);
+			if (value)
+				return (new Cookie(name, value));
+			return (null);
+		},
+		new: function (name) {
+			return (name ? new Cookie(name) : null);
+		},
+		read: function (name) {
+			name += "=";
+			var cookies = document.cookie.split(';'),
+				cookie;
+			for (var i in cookies) {
+				cookie = cookies[i].trim();
+				if (cookie.indexOf(name) === 0) return (cookie.substring(name.length, cookie.length));
+			}
+			return (null);
+		}
+	};
+
+	Cookie.prototype._read = Backbone.Cookie.read;
+
 })(window.Backbone, window._);
 

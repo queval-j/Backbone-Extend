@@ -1,4 +1,4 @@
-app.Views.Home = app.Views.Abstract.extend({
+app.Views.Home = Backbone.Page.extend({
 	init: function (opts) {
 		this._alreadyLoaded = false;
 	},

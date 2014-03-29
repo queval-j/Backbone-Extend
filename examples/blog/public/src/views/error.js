@@ -1,4 +1,4 @@
-app.Views.Error = app.Views.Abstract.extend({
+app.Views.Error = Backbone.Page.extend({
 	init: function (opts) {
 		this._alreadyLoaded = false;
 		this._code = 404;

@@ -1,4 +1,4 @@
-app.Views.Contact = app.Views.Abstract.extend({
+app.Views.Contact = Backbone.Page.extend({
 	init: function (opts) {
 		this._alreadyLoaded = false;
 	},

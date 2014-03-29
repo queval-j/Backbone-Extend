@@ -1,4 +1,4 @@
-app.Views.Articles = app.Views.Abstract.extend({
+app.Views.Articles = Backbone.Page.extend({
 	init: function (opts) {
 		this._alreadyLoaded = false;
 		this.listingTmpl = null;
