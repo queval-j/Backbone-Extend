@@ -4,15 +4,19 @@ Backbone-Extend
 Backbon-extend provides new features in order to enhance the Web Applications made with Backbone (https://github.com/jashkenas/backbone).
 
 Currently, Backbone-Extend has :
-- Backbone.Application :
-Backbone.Application allow the Backbone.Page to talk between us and provide a system to prevent a user to modify the web application directly in the console.
-- Backbone.Page :  
-His goal is simple : make the difference between primary view and subview. You can have only one Backbone.Page showed, so when you fire the show event, you hide all the view not concernet by the call. It's just easy like that.
-- Backbone.Keyboard :  
-Backbone.Keyboard provide a system to create some shortcuts with the keyboard and do some action,
-- Backbone.Network :  
-Backbone.Network provide some shortcuts to do some query on the serveur (JSON / REST API),
-- Backbone.Template :  
-Backbone.Template allow you to get your templates and save them in a memory cache.
+- **Backbone.Application** :
+Backbone.Applications allows to the Backbone.Page to communicate with each of them. It is able to start your application in the memory without any reference for the user and, therefore, prevent the user to modify the Application.
+- **Backbone.Cookie** :  
+With Backbone.Cookie, it's possible to create or get a cookie previously saved and manage it easily.
+- **Backbone.Page** :  
+Backbone.Page is a very useful object inherited from Backbone.View. The big difference between Backbone.Page and Backbone.View is the behavior. You can create a lot of Backbone.Page, like Backbone.View, but you can display only one of them.
+- **Backbone.Keyboard** :  
+If you would like to create global shortcuts, you can use Backbone.Keyboard. Take a look to the examples.
+- **Backbone.Network** :  
+Backbone.Network was created especially for your calls with your API.
+- **Backbone.Template** :  
+Backbone.Template will be your best friend ! You can load your template with it easily, and you will be able to compile your template with it !
 
-I would like to add other possibility with Backbone.Extend. You can see the project "blog" in the examples folder.
+Backbone.extend is not finished ! So, take a look from time to time ;)
+
+You can see the examples, to watch how Backbone.Extends works.
