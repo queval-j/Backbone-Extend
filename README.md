@@ -20,7 +20,7 @@ If you would like to create global shortcuts, you can use Backbone.Keyboard. Tak
 Backbone.Network was created especially for your calls with your API.
 
 - **Backbone.Service** :  
-With Backbone.Service, you can create with a short html an object. This object will have a simple usage, like a Modale box. You can see an example in examples/service.
+With Backbone.Service, you can create with a short html, an object. This object will have a simple usage, like a Modale box. You can see an example in examples/service.
 
 Short example :
 
@@ -48,7 +48,7 @@ Short example :
 </service>
 ```
 
-With this code, you have an new Backbone.View already add to the body, with a getter and setter for some attribute. And you have declear 2 functions (sayHello and init). You have asked to Backbone.Service to load 2 templates and initialize the view with the template index.html and you have asked an instance of this view.
+With this code, you have an new Backbone.View already add to the body, with a getter and setter for some attributes. And you have declear 2 functions (sayHello and init). You have asked to Backbone.Service to load 2 templates and initialize the view with the template index.html and you have asked an instance of this view. (The attribute Readonly, will after)
 - **Backbone.Template** :  
 Backbone.Template will be your best friend ! You can load your template with it easily, and you will be able to compile your template with it !
 
