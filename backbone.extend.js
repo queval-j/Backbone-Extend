@@ -78,10 +78,14 @@
 			if (i < max) {
 				$.getScript(self.__files[i], loadFunc);
 			} else {
-				_.extend({}, app)[self.__appFuncToCall]();
-				self.__app = null;
-				self.__appFuncToCall = null;
-				callback();
+				if (app && app[self.__appFuncToCall]) {
+					_.extend({}, app)[self.__appFuncToCall]();
+					self.__app = null;
+					self.__appFuncToCall = null;
+					callback();
+				} else {
+					throw (new Error('The method "'+self.__appFuncToCall+"' is unknown."));
+				}
 			}
 			return (self);
 		};
@@ -175,7 +179,6 @@
 	};
 
 	Backbone.Template.prototype.get = function (url, callback) {
-		url = this.__url + url;
 		callback = callback || $.noop;
 		if (this.__cache[url]) return callback(null, this.__cache[url]);
 		var self = this;
@@ -354,6 +357,256 @@
 	};
 
 	Cookie.prototype._read = Backbone.Cookie.read;
+
+	// Backbone.Services
+	// 
+	// - addService('module.html')
+	// - getService('name')
+	// - load(callback)
+	// 
+	(function (Backbone) {
+		String.prototype.capitalizeFirstLetter = function() {
+			return (this.charAt(0).toUpperCase() + this.slice(1));
+		};
+		var Service = function () {
+			this.$el = $('<service>');
+			this.instance = {
+				'init': $.noop,
+				'attr': {},
+				'templates': {},
+				'$el': $('<div>'),
+				_bbe_render: function (template, values) {
+					if (typeof values != 'object')
+						values = {};
+					var obj = _.extend({
+						'templates': this.templates,
+						'self': this,
+						'attributes': this.attr
+					}, values);
+					return (_.template(template, obj));
+				},
+				getTemplate: function (name) {return (this.templates[name]);}
+			};
+			this.STRING = typeof '';
+			this.NUMBER = typeof 1;
+			this.FUNCTION = typeof $.noop;
+			this.OBJECT = typeof Backbone;
+		};
+
+		Service.prototype.toHtml = function (template) {
+			template = template.replace(/<\/template\>/gi, '</script>');
+			template = template.replace(/<template/gi, '<script type="text/JavaScript"');
+			return ($(template));
+		};
+
+		Service.prototype.fillSimpleInstance = function ($template) {
+			var $el = this.$el,
+				instance = this.instance;
+			instance.render = function () {
+				instance.$el.attr('id', $el.attr('id') || ''); // assign id
+				instance.$el.attr('class', $el.attr('class') || ''); // assign id
+				var rendered = this._bbe_render(this.getTemplate($el.attr('template-main') || 'main') || '', {});
+				instance.$el.html(rendered);
+				$($el.attr('attachTo')).append(instance.$el);
+			};
+
+			instance.initialize = function () {
+				this.render();
+				this.init();
+			};
+		};
+
+		Service.prototype.load = function (template, callback) {
+			var self = this;
+			this.$el = this.toHtml(template);
+
+			if (!this.$el.get(0) || (this.$el.get(0) && this.$el.get(0).tagName.toLowerCase() != "service"))
+				throw new Error('Backbone.Service: is not a valid service.');
+			_.each(this.$('property'), function () {
+				self.parseProperty.call(self, arguments);
+			});
+			_.each(this.$('script[type="text/JavaScript"]'), function (template) {
+				self.addTemplate(template);
+			});
+			this.loadTemplate(function () {
+				var instance = self.instance;
+				self.fillSimpleInstance(); // fill instance
+				if (self.$el.attr('extend')) {
+					var obj = window,
+						keys = self.$el.attr('extend').split('.');
+					for (var key in keys) {
+						if (obj[keys[key]]) {
+							obj = obj[keys[key]];
+						}
+						else {
+							console.log(obj, keys[key]);
+							return (callback(self.instance));
+						}
+					}
+					if (self.$el.attr('instance') === 'true') {
+						try {
+							instance = new (obj.extend(instance))();
+						} catch (e) {
+							console.error(e);
+							throw (new Error('Backbone.Service: Impossible to create an instance.'));
+						}
+					} else {
+							instance = obj.extend(instance);
+					}
+				}
+				callback(instance);
+			});
+		};
+
+		Service.prototype.loadTemplate = function (callback) {
+			var max = _.countBy(this.instance.templates, function (elm) {
+					return (typeof elm);
+				})['function'],
+				i = 0,
+				func = function () {
+					if (++i >= max) {
+						callback();
+					}
+				};
+			_.each(this.instance.templates, function (elm) {
+				if (typeof elm === 'function') {
+					elm(func);
+				}
+			});
+		};
+
+		Service.prototype.addTemplate = function ($template) {
+			$template = $($template);
+			var self = this;
+			if (!$template.attr('name').trim()) return;
+			if ($template.attr('src')) {
+				this.instance.templates[$template.attr('name')] = function (callback) {
+					Backbone.Template.get(Backbone.Services.getTemplateUrl() + $template.attr('src'), function (err, html) {
+						self.instance.templates[$template.attr('name')] = html || null;
+						callback();
+					});
+				};
+				return (this);
+			}
+			this.instance.templates[$template.attr('name')] = $template.html();
+		};
+
+		Service.prototype.checkType = function (type) {
+			if (type == this.STRING ||
+				type == this.NUMBER ||
+				type == this.FUNCTION ||
+				type == this.OBJECT)
+				return (true);
+			return (false);
+		};
+
+		Service.prototype.parsePropertyService = function (name, service) {
+			var funcName;
+			switch (service) {
+				case 'get':
+					funcName = 'get'+name.capitalizeFirstLetter();
+					this.instance[funcName] = function () {
+						return (this.attr[name]);
+					};
+					break;
+				case 'set':
+					funcName = 'set'+name.capitalizeFirstLetter();
+					this.instance[funcName] = function (value) {
+						this.attr[name] = value;
+						return (this);
+					};
+					break;
+				default:
+					break;
+			}
+		};
+
+		Service.prototype.parseProperty = function ($property) {
+			$property = $($property);
+			var name, type, services, configure, value,
+				self = this;
+			name = $property.attr('name'); // require
+			type = $property.attr('type') || 'string'; // default : string
+			services = ($property.attr('services') || '').split('|');
+			value = $property.html();
+			if (!this.checkType(type))
+				return;
+			if (type == this.STRING || type == this.NUMBER || type == this.OBJECT) {
+				if (type == this.OBJECT) {
+					try {
+						this.instance.attr[name] = JSON.parse(value);
+					} catch (e) {
+						this.instance.attr[name] = value;
+					}
+				}
+				else
+					this.instance.attr[name] = value;
+				_.each(services, function (service) {
+					self.parsePropertyService(name, service);
+				});
+			}
+			if (type != this.FUNCTION) return;
+			var service = {exports: {}};
+			(function (window) {
+				value = '(function () {'+value+'})()';
+				eval(value);
+			})({});
+			this.instance[name] = service.exports;
+		};
+
+		Service.prototype.$ = function (elm) {
+			return ($(elm, this.$el));
+		};
+
+		Backbone.Services = {
+			_url: '/services',
+			_urlTemplate: '/templates/',
+			_services: {}, // will content the services
+			setUrl: function (url) {
+				this._url = url;
+				return (this);
+			},
+			getUrl: function () {
+				return (this._url);
+			},
+			setTemplateUrl: function (url) {
+				this._urlTemplate = url;
+				return (this);
+			},
+			getTemplateUrl: function () {
+				return (this._urlTemplate);
+			},
+			add: function (name, url) {
+				this._services[name] = url;
+				return (this);
+			},
+			get: function (service) {
+				return (this._services[service]);
+			},
+			load: function (callback) {
+				var max = _.countBy(this._services, function (elm) {return (typeof elm);})['string'],
+					i = 0,
+					loadFunc = function () {
+						if (++i >= max)
+							callback();
+					}, self = this;
+				_.each(this._services, function (elm, key) {
+					if (typeof elm === "string") {
+						if (elm.indexOf('http') === -1)
+							elm = self.getUrl() + elm;
+						Backbone.Template.get(elm, function (err, res) {
+							var service = new Service();
+							service.load(res, function (instance) {
+								self._services[key] = instance;
+								loadFunc();
+							});
+						});
+					}
+				});
+				return (this);
+			}
+		};
+	})(Backbone);
 
 })(window.Backbone, window._);
 

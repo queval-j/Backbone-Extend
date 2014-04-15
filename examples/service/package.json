@@ -1,0 +1,15 @@
+{
+	"name": "BackboneServices",
+	"version": "0.0.1",
+	"author": "Jean-Christophe Queval-Bourgeois <jc.queval@gmail.com>",
+	"scripts": {
+		"run": "NODE_ENV=development node app.js",
+		"run-prod": "NODE_ENV=production node app.js"
+	},
+	"dependencies": {
+		"express": "3.x"
+	},
+	"engines": {
+		"node": ">= 0.10.5"
+	}
+}

@@ -1,0 +1,21 @@
+<service id="nsWindowModal" class="bouh" template-main="index" newton-services="true" extend="Backbone.View" instance="true" attachTo="body">
+	<property name="version"	type="string" services="get" readonly="true"></property>
+	<property name="title"		type="string" services="get|set">Article</property>
+	<property name="subTitle"	type="string" services="get|set"></property>
+	<property name="content"	type="string" services="get|set">Bonjour, comment allez vous ?</property>
+	<property name="obj"		type="object" services="get|set"></property>
+	<property name="sayHello"	type="function">
+		service.exports = function () {
+			return ('Hello :D');
+		}
+	</property>
+	<property name="init"	type="function">
+		service.exports = function () {
+			// call after the initialization
+		}
+	</property>
+	<template name="index" src="home.html"></template>
+	<template name="secondtemplate">
+		Bonjour :)
+	</template>
+</service>
