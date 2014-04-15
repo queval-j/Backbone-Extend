@@ -1,12 +1,12 @@
 # Workshop 3
 ==========
 
-## Les APIs
+## Server APIs
 
 
-### Hash reçu en cas d'erreur
+### Hash received in error case
 
-**Hash reçu :**
+**Hash received :**
 
 ```
 {
@@ -16,17 +16,17 @@
 }
 ```
 
-### Récupérer les articles
+### Get the articles
 
 ```
 GET - /api/articles
 ```
 
-**Hash à envoyer :**
+**Hash to send :**
 
-Aucun
+Nothing
 
-**Hash reçu :**
+**Hash received :**
 
 ```
 {
@@ -39,13 +39,13 @@ Aucun
 }
 ```
 
-### Ajouter un article
+### Add an article
 
 ```
 POST - /api/articles
 ```
 
-**Hash à envoyer :**
+**Hash to send :**
 
 ```
 {
@@ -56,7 +56,7 @@ POST - /api/articles
 ```
 
 
-**Hash reçu :**
+**Hash received :**
 
 ```
 {
@@ -64,13 +64,13 @@ POST - /api/articles
 }
 ```
 
-### Modifier un article
+### Modify an article
 
 ```
 PUT - /api/articles/:id
 ```
 
-**Hash à envoyer :**
+**Hash to send :**
 
 ```
 {
@@ -81,7 +81,7 @@ PUT - /api/articles/:id
 ```
 
 
-**Hash reçu :**
+**Hash received :**
 
 ```
 {
@@ -96,17 +96,17 @@ PUT - /api/articles/:id
 }
 ```
 
-### Supprimer un article
+### Remove an article
 
 ```
 DELETE - /api/articles/:id
 ```
 
-**Hash à envoyer :**
-Rien à envoyer
+**Hash to send :**
+Nothing
 
 
-**Hash reçu :**
+**Hash received :**
 
 ```
 {
