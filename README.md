@@ -24,7 +24,7 @@ With Backbone.Service, you can create with a short html, an object. This object 
 
 Short example :
 
-```
+```html
 <service id="nsWindowModal" class="bouh" template-main="index" extend="Backbone.View" instance="true" attachTo="body">
 	<property name="version"	type="string" services="get" readonly="true">0.1.1</property>
 	<property name="title"		type="string" services="get|set">Article</property>
