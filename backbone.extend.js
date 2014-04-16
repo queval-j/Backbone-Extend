@@ -68,15 +68,17 @@
 		return (this.__urls['API']);
 	};
 
-	Backbone.Application.prototype.start = function (callback) {
+	Backbone.Application.prototype.start = function (callback, callbackError) {
 		callback = callback || $.noop;
+		callbackError = callbackError || $.noop;
 		var i = -1,
 			max = this.__files.length,
 			self = this,
 		loadFunc = function () {
 			++i;
 			if (i < max) {
-				$.getScript(self.__files[i], loadFunc);
+				$.getScript(self.__files[i], loadFunc)
+				.fail(callbackError);
 			} else {
 				if (app && app[self.__appFuncToCall]) {
 					_.extend({}, app)[self.__appFuncToCall]();
