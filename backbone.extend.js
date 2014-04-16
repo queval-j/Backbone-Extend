@@ -181,11 +181,14 @@
 	};
 
 	Backbone.Template.prototype.get = function (url, callback) {
+		var subUrl = url;
+		if (subUrl.indexOf('http') === -1)
+			subUrl = this.__url + subUrl;
 		callback = callback || $.noop;
 		if (this.__cache[url]) return callback(null, this.__cache[url]);
 		var self = this;
 		$.ajax({
-			'url': url,
+			'url': subUrl,
 			'type': 'GET'
 		})
 		.done(function (html) {
