@@ -100,6 +100,7 @@
 	// - show
 	// - hide
 	// - setApp
+	// - getApp
 	// - setHistory([{
 	//		"name": "Home",
 	//		"view": app.views.Home (extend of Page)
@@ -112,10 +113,13 @@
 	Backbone.Page = Backbone.View.extend({
 		__pages: {
 			_visible: true
+			// , app: this.app // TODO: save app here
+			// , location: this.__location // TODO: save the location here
 		},
-		_location: [],
+		__location: [],
 		init: $.noop, // like initialize
 		initForAll: $.noop, // is init for each instance
+		getApp: function () {return (this.app);},
 		initialize: function (opts) {
 			var self = this;
 			this.app = opts['app'] || null;
@@ -147,11 +151,11 @@
 				return (elm['name'] && elm['view'] ? false : true);
 			});
 			if (formated) return (this);
-			this._location = ways;
+			this.__location = ways;
 		},
 		addHistory: function (way) {
 			if (!(elm['name'] && !(elm['view']))) return (this);
-			this._location.push(way);
+			this.__location.push(way);
 		}
 	});
 
@@ -218,7 +222,7 @@
 		return (this);
 	};
 
-	Backbone.Network.prototype.query = function (opts, callback) {
+	Backbone.Network.prototype.query = function (opts, callback, ctx) {
 		if (!opts['url']) return callback('Error: no url provided');
 		if (!(opts['url'].indexOf('http://') === 0 ||
 			opts['url'].indexOf('https://') === 0))
@@ -229,21 +233,33 @@
 			'data': opts['data'],
 			'dataType': opts['dataType'] || undefined
 		})
+		
 		.done(function (res) {
-			callback(null, res);
-		}).fail(callback);
+			callback.apply(ctx || this, [null, res]);
+		}).fail(function () {
+			callback.apply(ctx || this, arguments);
+		});
 	};
 
 	var methods = ['get', 'post', 'put', 'delete'];
 	_.each(methods, function (method) {
-		Backbone.Network.prototype[method+"JSON"] = function (opts, callback) {
+		Backbone.Network.prototype[method+"JSON"] = function (opts, context, callback) {
+			if (typeof context === 'function') {
+				callback = context;
+				context = null;
+			}
 			opts['type'] = method.toUpperCase();
 			opts['dataType'] = "json";
-			Backbone.Network.query(opts, callback);
+			opts['contentType']="application/json";
+			Backbone.Network.query(opts, callback, context);
 		};
-		Backbone.Network.prototype[method] = function (opts, callback) {
+		Backbone.Network.prototype[method] = function (opts, context, callback) {
+			if (typeof context === 'function') {
+				callback = context;
+				context = null;
+			}
 			opts['type'] = method.toUpperCase();
-			Backbone.Network.query(opts, callback);
+			Backbone.Network.query(opts, callback, context);
 		};
 	});
 
