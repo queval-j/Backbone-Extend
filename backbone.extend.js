@@ -80,8 +80,8 @@
 				$.getScript(self.__files[i], loadFunc)
 				.fail(callbackError);
 			} else {
-				if (app && app[self.__appFuncToCall]) {
-					_.extend({}, app)[self.__appFuncToCall]();
+				if (self.__app && self.__app[self.__appFuncToCall]) {
+					_.extend({}, self.__app)[self.__appFuncToCall]();
 					self.__app = null;
 					self.__appFuncToCall = null;
 					callback();
@@ -128,8 +128,8 @@
 				if (cid != self.cid)
 					self.hide();
 			});
-			this.initForAll.apply(this, opts);
-			this.init.apply(this, opts);
+			this.initForAll.apply(this, arguments);
+			this.init.apply(this, arguments);
 			this.hide();
 		},
 		show: function () {
