@@ -111,29 +111,39 @@
 	// });
 
 	Backbone.Page = Backbone.View.extend({
-		__pages: {
-			_visible: true
-			// , app: this.app // TODO: save app here
-			// , location: this.__location // TODO: save the location here
-		},
-		__location: [],
 		init: $.noop, // like initialize
 		initForAll: $.noop, // is init for each instance
-		getApp: function () {return (this.app);},
-		initialize: function (opts) {
+		getApp: function () { return (this.__pages.app); },
+		getEvents: function () { return (this.__pages.e); },
+		__initialize: function (opts) {
 			var self = this;
-			this.app = opts['app'] || null;
-			this.e = _.extend({}, Backbone.Events);
+			this.__pages = {
+				_visible: true
+				, app: opts['app'] || null
+				, e: _.extend({}, Backbone.Events)
+				, __location: []
+			};
+
 			Backbone.Application.on('BackboneExtend::newView', function (cid) {
 				if (cid != self.cid)
 					self.hide();
 			});
+		},
+		initialize: function (opts) {
+			var self = this;
+			this.__initialize(opts);
 			this.initForAll.apply(this, arguments);
 			this.init.apply(this, arguments);
 			this.hide();
 		},
+		isShow: function () {
+			return (this.__pages._visible);
+		},
+		isHide: function () {
+			return (!this.__pages._visible);
+		},
 		show: function () {
-			this.e.trigger('show');
+			this.getEvents().trigger('show');
 			if (this.__pages._visible) return (this);
 			this.$el.show(0);
 			this.__pages._visible = true;
@@ -142,7 +152,7 @@
 		},
 		hide: function () {
 			this.$el.hide(0);
-			this.e.trigger('hide');
+			this.getEvents().trigger('hide');
 			this.__pages._visible = false;
 			return (this);
 		},
@@ -151,13 +161,121 @@
 				return (elm['name'] && elm['view'] ? false : true);
 			});
 			if (formated) return (this);
-			this.__location = ways;
+			this.__pages.__location = ways;
 		},
 		addHistory: function (way) {
 			if (!(elm['name'] && !(elm['view']))) return (this);
-			this.__location.push(way);
+			this.__pages.__location.push(way);
 		}
 	});
+
+	(function (Backbone) {
+		var DataModel = Backbone.Model.extend({
+			initialize: function (opts) {
+				this.set('lastTime', 0);
+				this.set('data', {});
+				this.__updating = false;
+				this.waitingFor = [];
+			},
+			open: function () {
+				this.__updating = false;
+				var exec_stack = [],
+					self = this;
+					if (!this.waitingFor.length) return;
+				var elm = this.waitingFor[0];
+				this.waitingFor.shift();
+				this.sync.apply(this, elm['arguments']);
+				this.waitingFor.length = 0;
+			},
+			close: function () {
+				this.__updating = true;
+			},
+			isUpdating: function () {
+				if (!this.__updating) return (false);
+				this.waitingFor.push({
+					"arguments": arguments
+				});
+				return (true);
+			},
+			hasToBeRefreshed: function () {
+				var now = (new Date()).getTime(),
+					maxTime = this.get('refresh-time');
+				now -= this.get('lastTime');
+				if (now < maxTime)
+					return (false);
+				return (true);
+			},
+			sync: function (onDone, onError, ctx) {
+				if (this.isUpdating(onDone, onError, ctx)) return;
+				if (!this.hasToBeRefreshed()) {
+					this.open();
+					return (onDone.apply(ctx || this, [this.get('data')]));
+				}
+				this.close();
+				onError = onError || onDone;
+				var loader = this.toJSON();
+				var type = loader.type,
+					dataType = loader.dataType.toLowerCase();
+				if (dataType === 'json') {
+					type = (type.toLowerCase())+'JSON';
+				}
+				if (!Backbone.Network[type]) {
+					this.open();
+					return (onErrorError.apply(this, ["Error: the method doesn't exist."]));
+				}
+				Backbone.Network[type](loader, this, function (err, res) {
+					if (err) return (onError.apply(ctx || this, arguments));
+					var data = loader.onDone(res);
+					this.set('data', data);
+					this.set('lastTime', (new Date()).getTime());
+					onDone.apply(ctx || this, [data]);
+					this.open();
+				});
+			}
+		});
+		
+		var DataCollection = Backbone.Collection.extend({
+			model: DataModel
+		});
+		var getData = function (data) {
+			return (data);
+		};
+
+		// Backbone.Data
+		// - set("name", opts) (url, type, dataType, onDone, refresh-mode, refresh-time)
+		// - get("name", function (data) {
+		// 		console.log(data);
+		// }, function (err) {
+		// 		console.log(err);
+		// }, this)
+
+		Backbone.Data = {
+			__attr: {
+				dataCollection: new DataCollection(),
+				e: _.extend({}, Backbone.Events)
+			},
+			_getCollection: function () { return (this.__attr.dataCollection); },
+			get: function (id, onDone, onError, ctx) {
+				var elm = this._getCollection().find(function (model) {
+					return (model.get('name') === id);
+				});
+				if (!elm) return onError.apply(ctx || this, ['"'+id+'" is undefined']);
+				elm.sync(onDone, onError, ctx);
+			},
+			set: function (key, opts) {
+				var model = {
+					'name': key,
+					'url': opts['url'],
+					'type': opts['type'] || 'get',
+					'dataType': opts['dataType'] || 'json',
+					'onDone': opts['onDone'] || getData,
+					'refresh-mode': opts['refresh-mode'] || 'just-in-time', // "just-in-time" | "interval" | "socket" | "socket|just-in-time|interval"
+					'refresh-time': opts['refresh-time'] || 10000
+				};
+				this._getCollection().add(model);
+			}
+		};
+	})(Backbone)
 
 	//	- Backbone.Template
 	//	- get(url, callback)
@@ -227,8 +345,8 @@
 		if (!(opts['url'].indexOf('http://') === 0 ||
 			opts['url'].indexOf('https://') === 0))
 			opts['url'] = this.__url + (opts['url'] || '');
-		if (opts['type'] != 'GET' && (opts['contentType'] && opts['contentType'] == 'application/json'))
-			opts['data'] = JSON.stringify(opts['data']);
+		// if (opts['type'] != 'GET' && (opts['contentType'] && opts['contentType'] == 'application/json'))
+		// 	opts['data'] = JSON.stringify(opts['data']);
 		$.ajax({
 			'url': opts['url'],
 			'type': opts['type'],

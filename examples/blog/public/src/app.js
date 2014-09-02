@@ -10,10 +10,19 @@ window.app = {
 	getMenu: function () {
 		return (this.$menus);
 	},
+	initializeResources: function () {
+		Backbone.Data.set('articles', {
+			'url': '/api/articles',
+			onDone: function (data) {
+				return (data.articles);
+			}
+		});
+	},
 	start: function () {
 		this.e = _.extend({}, Backbone.Events);
 		Backbone.Network.setUrl(this.url);
 		Backbone.Template.setUrl(this.url);
+		this.initializeResources();
 		this.router = new app.Router({
 			"app": this
 		});

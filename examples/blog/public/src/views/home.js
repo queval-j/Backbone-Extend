@@ -18,7 +18,7 @@ app.Views.Home = Backbone.Page.extend({
 		}
 		this.loadTemplate(function (html) {
 			self.$el.html(html);
-			self.app.$content.append(self.$el);
+			self.getApp().$content.append(self.$el);
 			self._alreadyLoaded = true;
 			callback.apply(self, []);
 		});

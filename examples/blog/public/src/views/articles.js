@@ -5,7 +5,7 @@ app.Views.Articles = Backbone.Page.extend({
 		this.contentTmpl = null;
 		this._collection = new app.Collections.Articles();
 		this._id = 0;
-		this.e.on('show', this._redraw, this);
+		this.getEvents().on('show', this._redraw, this);
 	},
 	_dataId: "page-articles",
 	loadTemplate: function (callback) {
@@ -32,7 +32,7 @@ app.Views.Articles = Backbone.Page.extend({
 			self.$el.html(html);
 			self.listingTmpl = self.$('#articleListing').html();
 			self.contentTmpl = self.$('#articleContent').html();
-			self.app.$content.append(self.$el);
+			self.getApp().$content.append(self.$el);
 			self._alreadyLoaded = true;
 			self.loadArticles(function () {
 				callback.apply(self, []);
@@ -42,13 +42,13 @@ app.Views.Articles = Backbone.Page.extend({
 	},
 	loadArticles: function (callback) {
 		var self = this;
-		Backbone.Network.get({
-			'url': '/api/articles'
-		}, function (err, res, reason) {
-			if (err) return alert('Error: '+reason);
-			self._collection.add(res['articles']);
+		Backbone.Data.get('articles', function (data) {
+			self._collection.add(data);
 			self.drawArticles(callback);
-		});
+		}, function () {
+			console.error(arguments);
+			alert('Error');
+		}, this);
 	},
 	drawArticles: function (callback) {
 		callback = callback || $.noop;

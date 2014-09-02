@@ -1,0 +1,18 @@
+<div class="articles row">
+	<div class="listing col-md-4">
+		<ul class="nav nav-pills nav-stacked myList">
+			<li><a>Chargement...</a></li>
+		</ul>
+	</div>
+	<div class="content col-md-8 myContent">
+		Chargement...
+	</div>
+	<!-- Templates -->
+	<script type="text/template" id="articleListing">
+		<li><a href="#articles/<%- id %>"><%- model.get('name') %></a></li>
+	</script>
+	<script type="text/template" id="articleContent">
+		<h1><%- model.get('name') %></h1>
+		<p><%- model.get('content') %></p>
+	</script>
+</div>
