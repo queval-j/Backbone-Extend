@@ -143,17 +143,20 @@
 			return (!this.__pages._visible);
 		},
 		show: function () {
-			this.getEvents().trigger('show');
-			if (this.__pages._visible) return (this);
+			if (this.__pages._visible) {
+				this.getEvents().trigger('show');
+				return (this);
+			}
 			this.$el.show(0);
 			this.__pages._visible = true;
 			Backbone.Application.trigger('BackboneExtend::newView', this.cid);
+			this.getEvents().trigger('show');
 			return (this);
 		},
 		hide: function () {
 			this.$el.hide(0);
-			this.getEvents().trigger('hide');
 			this.__pages._visible = false;
+			this.getEvents().trigger('hide');
 			return (this);
 		},
 		setHistory: function (ways) {
@@ -172,10 +175,16 @@
 	(function (Backbone) {
 		var DataModel = Backbone.Model.extend({
 			initialize: function (opts) {
-				this.set('lastTime', 0);
-				this.set('data', {});
+				this.set('lastTime', this.get('refresh-time') + 1000);
+				this.set('data', undefined);
 				this.__updating = false;
 				this.waitingFor = [];
+			},
+			reinitialize: function () {
+				this.initialize();
+			},
+			getData: function () {
+				return (this.get('data'));
 			},
 			open: function () {
 				this.__updating = false;
@@ -201,11 +210,15 @@
 				var now = (new Date()).getTime(),
 					maxTime = this.get('refresh-time');
 				now -= this.get('lastTime');
-				if (now < maxTime)
+				if (this.get('data') && now < maxTime)
 					return (false);
 				return (true);
 			},
+			onError: function () {
+				console.error(arguments);
+			},
 			sync: function (onDone, onError, ctx) {
+				onError = onError || this.onError;
 				if (this.isUpdating(onDone, onError, ctx)) return;
 				if (!this.hasToBeRefreshed()) {
 					this.open();
@@ -221,9 +234,10 @@
 				}
 				if (!Backbone.Network[type]) {
 					this.open();
-					return (onErrorError.apply(this, ["Error: the method doesn't exist."]));
+					return (onError.apply(this, ["Error: the method doesn't exist."]));
 				}
 				Backbone.Network[type](loader, this, function (err, res) {
+					// this.open();
 					if (err) return (onError.apply(ctx || this, arguments));
 					var data = loader.onDone(res);
 					this.set('data', data);
@@ -261,6 +275,18 @@
 				});
 				if (!elm) return onError.apply(ctx || this, ['"'+id+'" is undefined']);
 				elm.sync(onDone, onError, ctx);
+			},
+			reinitialize: function (series) {
+				if (!_.isArray(series)) {
+					series = [];
+					this._getCollection().each(function (model) {
+						series.push(model.get('name'));
+					});
+				}
+				this._getCollection().each(function (model) {
+					if (series.indexOf(model.get('name')) >= 0)
+						model.reinitialize();
+				});
 			},
 			set: function (key, opts) {
 				var model = {
@@ -580,7 +606,7 @@
 							obj = obj[keys[key]];
 						}
 						else {
-							console.log(obj, keys[key]);
+							// console.log(obj, keys[key]);
 							return (callback(self.instance));
 						}
 					}
