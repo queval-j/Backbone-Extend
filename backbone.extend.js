@@ -537,7 +537,7 @@
 	// - isClose() = bool
 	// - isActive = bool
 	// - close() = bool (true if closed)
-	// - send(func, callback, ctx) - Func = Function to execute in the sub-window side.
+	// - send(func, callback, ctx) - Func = Function to execute in the sub-window side
 
 	(function (Backbone, window) {
 		var cnfTimeout = 10,
@@ -545,7 +545,7 @@
 
 		var BBWindow = function (args) {
 			this.queue = [];
-			this.on('newMessage', this._sendPackage, this);
+			this.on('_newMessage', this._sendPackage, this);
 			// this._open(args);
 		};
 
@@ -564,8 +564,18 @@
 				alreadyDone = true;
 				self.startCommunication(function (err) {
 					self._terminated = self.isOpen(); // close ?
-					if (!err && self.isActive())
+					if (!err && self.isActive()) {
+						self._communicator.on('all', function () {
+							var args = Array.prototype.slice.call(arguments);
+							var e = args.shift();
+							if (e.indexOf('external:') != 0)
+								return;
+							e = e.slice('external:'.length);
+							args.unshift(e);
+							self.trigger.apply(self, args);
+						});
 						return (self.trigger('load'));
+					}
 				});
 			};
 		};
@@ -626,7 +636,7 @@
 				'ctx': ctx || callback
 			};
 			this.queue.push(message);
-			this.trigger('newMessage');
+			this.trigger('_newMessage');
 		};
 
 		BBWindow.prototype._sendPackage = function () {
@@ -646,6 +656,7 @@
 		// BBWindowCommunicator
 		//
 		// - start
+		// - talk
 		var BBWindowCommunicator =  function (autoload) {
 			autoload = autoload || _.isUndefined(autoload) || _.isNull(autoload);
 			this.init();
@@ -676,6 +687,14 @@
 
 		BBWindowCommunicator.prototype.start = function () {
 			// this.trigger('started');
+		}
+
+		BBWindowCommunicator.prototype.talk = function () {
+			var args = Array.prototype.slice.call(arguments);
+			var e = args.shift();
+			e = 'external:'+e;
+			args.unshift(e);
+			this.trigger.apply(this, args);
 		}
 
 		Backbone.Window = {
