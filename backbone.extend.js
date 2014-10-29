@@ -348,7 +348,7 @@
 	Backbone.Template.prototype.compile = function (guess, hash) {
 		if (this.__cache[guess])
 			guess = this.__cache[guess];
-		return (_.template(guess, hash));
+		return (_.template(guess)(hash));
 	};
 
 	Backbone.Template = new Backbone.Template();
@@ -550,7 +550,7 @@
 						'self': this,
 						'attributes': this.attr
 					}, values);
-					return (_.template(template, obj));
+					return (_.template(template)(obj));
 				},
 				getTemplate: function (name) {return (this.templates[name]);}
 			};
