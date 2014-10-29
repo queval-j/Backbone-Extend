@@ -525,6 +525,169 @@
 
 	Cookie.prototype._read = Backbone.Cookie.read;
 
+
+	// Backbone.Window :
+	//
+	// - open - like window.open but return a BBWindow
+
+	// BBWindow :
+	// 
+	// - on('load') = onload
+	// - isOpen() = bool
+	// - isClose() = bool
+	// - isActive = bool
+	// - close() = bool (true if closed)
+	// - send(func, callback, ctx) - Func = Function to execute in the sub-window side.
+
+	(function (Backbone, window) {
+		var cnfTimeout = 10,
+			cnfTimeoutTime = 250;
+
+		var BBWindow = function (args) {
+			this.queue = [];
+			this.on('newMessage', this._sendPackage, this);
+			// this._open(args);
+		};
+
+		BBWindow.prototype = _.extend(BBWindow.prototype, Backbone.Events);
+
+		BBWindow.prototype.open = function () {			// 
+			var self = this;
+			// Initialization
+			this._window = window.open.apply(window, arguments);
+			this._window.onbeforeunload = function () {
+				self._terminated = true;
+				self._window = undefined;
+			};
+			// Open window
+			this._window.onload = function () {
+				alreadyDone = true;
+				self.startCommunication(function (err) {
+					self._terminated = self.isOpen(); // close ?
+					if (!err && self.isActive())
+						return (self.trigger('load'));
+				});
+			};
+		};
+
+		BBWindow.prototype.startCommunication = function (callback) {
+			var self = this;
+			callback = callback || $.noop;
+				var timeout = cnfTimeout,
+					timeoutTime = cnfTimeoutTime;
+				var waitCommunication = function () {
+					if (--timeout < 0) {
+						self._communicator = undefined;
+						var msgError = 'Backbone.Extend was not able to communicate with the window.';
+						callback(msgError, null);
+						return (self.trigger('failed', msgError));
+					}
+					if ((self._window && !self._window.window.BBCommunicator) || !self._window)
+						return (setTimeout(waitCommunication, timeoutTime));
+					self._communicator = self._window.window.BBCommunicator;
+					self._communicator.once('started', function () {
+						var args = Array.prototype.slice.call(arguments);
+						args.unshift('started');
+						self.trigger.apply(self, args);
+						callback();
+					});
+					self._communicator.trigger('newConnection');
+				};
+			waitCommunication();
+		};
+
+		BBWindow.prototype.isOpen = function () {
+			return (!_.isUndefined(this._window));
+		};
+
+		BBWindow.prototype.isActive = function () {
+			return (!_.isUndefined(this._communicator));
+		};
+
+		BBWindow.prototype.isClosed = function () {
+			return (this._terminated);
+		};
+
+		BBWindow.prototype.close = function () {
+			if (this.isClosed())
+				return (true);
+			this._window.close();
+			this._terminated = true;
+			this._window = undefined;
+			return (true);
+		};
+
+		BBWindow.prototype.send = function (toSend, callback, ctx) {
+			var ticket = (new Date()).getTime(),
+				message = {
+				'message': (toSend.toString()),
+				'ticket': ''+ticket,
+				'callback': callback || $.noop,
+				'ctx': ctx || callback
+			};
+			this.queue.push(message);
+			this.trigger('newMessage');
+		};
+
+		BBWindow.prototype._sendPackage = function () {
+			var msg = this.queue.shift();
+			if (_.isUndefined(msg)) return;
+			this._communicator.once('evaluate:'+msg.ticket, function (args) {
+				msg.callback.apply(msg.ctx, arguments)
+			});
+			
+			this._communicator.trigger(
+				'evaluate', 
+				msg.message.toString(),
+				msg.ticket
+			);
+		};
+
+		// BBWindowCommunicator
+		//
+		// - start
+		var BBWindowCommunicator =  function (autoload) {
+			autoload = autoload || _.isUndefined(autoload) || _.isNull(autoload);
+			this.init();
+			this.start();
+			if (autoload)
+				this.start();
+		};
+
+		BBWindowCommunicator.prototype = _.extend(BBWindowCommunicator.prototype, Backbone.Events);
+
+		BBWindowCommunicator.prototype.init = function () {
+			window.BBCommunicator = this;			
+			this.on('evaluate', function (toEval, id) {
+				if (!_.isString(toEval))
+					return;
+				var funcToExecute = eval('('+toEval+')');
+				funcToExecute(function () {
+					var args = Array.prototype.slice.call(arguments);
+					args.unshift('evaluate:'+id);
+					window.BBCommunicator.trigger.apply(window.BBCommunicator, args);
+				});
+			});
+			this.once('newConnection', function () {
+				this.trigger('started');
+			}, this);
+			// (onload || $.noop)();
+		};
+
+		BBWindowCommunicator.prototype.start = function () {
+			// this.trigger('started');
+		}
+
+		Backbone.Window = {
+			newWindow: function () {
+				return (new BBWindow(arguments))
+			},
+			newCommunicator: function (autoload) {
+				return (new BBWindowCommunicator(autoload));
+			}
+		};
+	})(Backbone, window);
+
 	// Backbone.Services
 	// 
 	// - addService('module.html')
