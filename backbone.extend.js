@@ -11,7 +11,10 @@
 	// - Backbone.Application
 	// - Backbone.Keyboard
 	// - Backbone.Page
+	// - Backbone.Network
+	// - Backbone.Data
 	// - Backbone.Template
+	// - Backbone.Window
 
 	// Backbone.Application
 	//  - attachApp(App, funcToCall)
@@ -411,6 +414,7 @@
 
 	Backbone.Network = new Backbone.Network();
 
+	// Backbone.Keyboard
 	Backbone.Keyboard = function () {
 		this.__lastKey = [];
 	};
@@ -420,6 +424,9 @@
 	Backbone.Keyboard.prototype.start = function () {
 		var self = this,
 			buff;
+
+		this.__lastKey.length = 0;
+
 		document.onkeydown = function (e) {
 			self.__lastKey.push(self.getKeyInfo(e));
 			self.__last = e;
@@ -445,6 +452,14 @@
 		return (this);
 	};
 
+	Backbone.Keyboard.prototype.stop = function () {
+		var self = this,
+			buff;
+		document.onkeydown = $.noop;
+		document.onkeyup = $.noop;
+		return (this);
+	};
+
 	Backbone.Keyboard.prototype.getKeyInfo = function (e) {
 		if (!e) return (null);
 		return ({
@@ -458,7 +473,6 @@
 	};
 
 	Backbone.keyboard = new Backbone.Keyboard();
-
 
 	var Cookie = function (name, value) {
 		this._attrs = {
@@ -501,6 +515,11 @@
 		return (null);
 	};
 
+	// Backbone.Cookie :
+	//
+	// - get(name)
+	// - new(name)
+	// - read(name)
 	Backbone.Cookie = {
 		get: function (name) {
 			var value = this.read(name);
@@ -543,10 +562,9 @@
 		var cnfTimeout = 10,
 			cnfTimeoutTime = 250;
 
-		var BBWindow = function (args) {
+		var BBWindow = function () {
 			this.queue = [];
 			this.on('_newMessage', this._sendPackage, this);
-			// this._open(args);
 		};
 
 		BBWindow.prototype = _.extend(BBWindow.prototype, Backbone.Events);
@@ -556,6 +574,7 @@
 			// Initialization
 			this._window = window.open.apply(window, arguments);
 			this._window.onbeforeunload = function () {
+				self.trigger('closed');
 				self._terminated = true;
 				self._window = undefined;
 			};
@@ -611,7 +630,7 @@
 		};
 
 		BBWindow.prototype.isActive = function () {
-			return (!_.isUndefined(this._communicator));
+			return (!_.isUndefined(this._communicator) && !this.isClosed());
 		};
 
 		BBWindow.prototype.isClosed = function () {
@@ -619,9 +638,9 @@
 		};
 
 		BBWindow.prototype.close = function () {
-			if (this.isClosed())
-				return (true);
-			this._window.close();
+			if (this._window)
+				this._window.close();
+			
 			this._terminated = true;
 			this._window = undefined;
 			return (true);
