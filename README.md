@@ -11,7 +11,7 @@ Backbone.Application manage the connection among the Backbone.Pages, at the star
 
 Attach your application to Backbone.Application in order to start when you want. ```app```(```object```) and ```appStartMethod``` will be the method called from ```app``` for starting the application.
 
-```
+```javascript
 var App = {
 	run: function () {
 		console.log('application is now running');
@@ -26,7 +26,7 @@ Backbone.Application
 
 You can ask for loading javascript files to Backbone.Application before starting your application. 
 
-```
+```javascript
 var App = { [...] };
 Backbone.Application
 		.attachApp(App, 'run')
@@ -38,14 +38,16 @@ Backbone.Application
 
 You have to call this method in order to start your application.
 
-```
+```javascript
 var App = { [...] };
 Backbone.Application
 		.attachApp(App, 'run')
 		.addFile('/js/main.js') // string or array of string
 		.start(function () {
-			// This function is calling just after App.run();		}, function (jqXhr, error, reason) {
-			// This function is call if a file added before was not able to be loaded		});
+			// This function is calling just after App.run();
+		}, function (jqXhr, error, reason) {
+			// This function is call if a file added before was not able to be loaded
+		});
 ```
 
 
@@ -58,7 +60,7 @@ Backbone.Page is based on Backbone.View.extend with a new behavior designed for 
 
 Sample :
 
-```
+```javascript
 window.App {
 	Pages: {},
 	pages: {},
@@ -66,48 +68,65 @@ window.App {
 	run: function () {
 		// Create Pages
 		this.pages.Homepage = new this.Pages.Homepage({
-			'app': this // REQUIRED : you have to specify "app". It's equal to the main application.		}).render(function () {
-			this.show(); // "this" is equal to App.pages.Homepage		});
+			'app': this // REQUIRED : you have to specify "app". It's equal to the main application.
+		}).render(function () {
+			this.show(); // "this" is equal to App.pages.Homepage
+		});
 		
 		// Show the page "About"
 		var self = this;
 		this.pages.About.show();
 		setTimeout(function () {
 			self.pages.About = new self.Pages.About({
-				'app': self // REQUIRED : you have to specify "app". It's equal to the main application.			}).render(function () {
+				'app': self // REQUIRED : you have to specify "app". It's equal to the main application.
+			}).render(function () {
 				// Because the page "About" will be shown,
 				// the page "Homepage", will be hidden.
-				this.show(); // "this" is equal to App.pages.About			});		}, 1000);	}};
+				this.show(); // "this" is equal to App.pages.About
+			});
+		}, 1000);
+	}
+};
 
 window.App.Pages.Homepage = Backbone.Page.extend({
 	init: function (opts) { // = initialize
 		this.getEvents().on('show', this._show, this);
-		this.getEvents().on('hide', this._hide, this);	},
+		this.getEvents().on('hide', this._hide, this);
+	},
 	render: function (callback) {
 		callback = callback || $.noop;
 		this.$el.html('<h1>Homepage</h1>');
 		this.getApp().$body.append(this.$el);
 		callback.apply(this, []);
-		return (this);	},
+		return (this);
+	},
 	_show: function () {
-		console.log('shown');	},
+		console.log('shown');
+	},
 	_hide: function () {
-		console.log('hidden');		}});
+		console.log('hidden');	
+	}
+});
 
 window.App.Pages.About = Backbone.Page.extend({
 	init: function (opts) { // = initialize
 		this.getEvents().on('show', this._show, this);
-		this.getEvents().on('hide', this._hide, this);	},
+		this.getEvents().on('hide', this._hide, this);
+	},
 	render: function (callback) {
 		callback = callback || $.noop;
 		this.$el.html('<h1>Homepage</h1>');
 		this.getApp().$body.append(this.$el);
 		callback.apply(this, []);
-		return (this);	},
+		return (this);
+	},
 	_show: function () {
-		console.log('shown');	},
+		console.log('shown');
+	},
 	_hide: function () {
-		console.log('hidden');		}});
+		console.log('hidden');	
+	}
+});
 
 Backbone.Application
 		.attachApp(App, 'run')
@@ -118,13 +137,15 @@ Backbone.Application
 
 You can access to your main application with ```this.getApp()``` :
 
-```
+```javascript
 App.Pages.Homepage = Backbone.Page.extend({
 	init: function (opts) {
 		var 	getFromInstance = this.getApp(),
 			getFromParameters = opts['app'];
 
-		console.log(_.isEqual(getFromInstance, getFromParameters)); // true	}});
+		console.log(_.isEqual(getFromInstance, getFromParameters)); // true
+	}
+});
 
 ```
 
@@ -132,15 +153,19 @@ App.Pages.Homepage = Backbone.Page.extend({
 
 Backbone.Page give an event system that you can use to know information like : when the page is shown or hidden.
 
-```
+```javascript
 App.Pages.Homepage = Backbone.Page.extend({
 	init: function (opts) {
 		this.getEvents().on('show', this._show, this); // this.show is already used by Backbone.Page
-		this.getEvents().on('hide, this._hide, this); // this.hide is already used by Backbone.Page	},
+		this.getEvents().on('hide, this._hide, this); // this.hide is already used by Backbone.Page
+	},
 	_show: function () {
-		console.log('show');	},
+		console.log('show');
+	},
 	_hide: function () {
-		console.log('hide');	}});
+		console.log('hide');
+	}
+});
 
 ```
 
@@ -149,7 +174,7 @@ Backbone.Data is a system designed for syncing the **entity** between your appli
 
 ***First step :*** Declaring an entity
 
-```
+```javascript
 var entityOptions = {
 	"url": "/articles",
 	"type": "get",
@@ -159,8 +184,10 @@ var entityOptions = {
 	"onDone": function (data) {
 		// Result from the server 
 		// {
-		//	"articles": [{ [...] }, { [...] }, { [...] }, { [...] }]		// }
-		return (data.articles);	}
+		//	"articles": [{ [...] }, { [...] }, { [...] }, { [...] }]
+		// }
+		return (data.articles);
+	}
 };
 
 Backbone.Data.set(''articles", entityOptions); // Backbone.Data will now take to give us the synced data.
@@ -168,16 +195,18 @@ Backbone.Data.set(''articles", entityOptions); // Backbone.Data will now take to
 
 ***Seconds step :*** Getting the data
 
-```
+```javascript
 Backbone.Data.get('article', function (res) {
 	// Data has been updated
-	console.log(res);}, function (jqXhr, error, reason) {
+	console.log(res);
+}, function (jqXhr, error, reason) {
 	// an error is occurred
 	// You have 2 choices :
 	// You can throw an error or retry to get information
 	
 	// Or you can get the information from the cache with this.getData()
-	console.log(this.getData()); // 'this' is equal to your entity});
+	console.log(this.getData()); // 'this' is equal to your entity
+});
 ```
 
 **Backbone.Data : Go Further**
@@ -197,7 +226,7 @@ Backbone.Template will take and put in cache the template.
 
 Set the URL of the templates location.
 
-```
+```javascript
 Backbone.Template.setUrl('/templates/'); // = http://localhost/templates/
 Backbone.Template.setUrl('/templates'); // = http://localhost/templates
 ```
@@ -206,7 +235,7 @@ Backbone.Template.setUrl('/templates'); // = http://localhost/templates
 
 Return the current URL of Backbone.Template.
 
-```
+```javascript
 Backbone.Template.getUrl(); // = http://localhost/templates/ || http://localhost/templates
 ```
 
@@ -214,28 +243,32 @@ Backbone.Template.getUrl(); // = http://localhost/templates/ || http://localhost
 
 Return the template asked for.
 
-```
+```javascript
 var self = this;
 Backbone.Template.get('index.html', function (err, html) { // on error, is equal to jQuery onError (jqXhr, error, reason)
-	self.$el.html(html);});
+	self.$el.html(html);
+});
 ```
 
 **Backbone.Template.compile(```UrlOrTemplate```, ```hash```) :**
 
 ```UrlOrTemplate``` can be the URL ( ```index.html``` ) or the value ( ```<h1><%- title %> World !</h1>``` ).
 
-```
+```javascript
 var self = this;
 Backbone.Template.get('index.html', function (err, html) { // on error, is equal to jQuery onError (jqXhr, error, reason)
 	self.$el.html(Backbone.Template.compile(html, {
-		"title": "Hello"	}));});
+		"title": "Hello"
+	}));
+});
 ```
 
 Or more quickly :
 
-```
+```javascript
 this.$el.html(Backbone.Template.compile('index.html', { // Working only if the template has already been loaded
-	"title": "Hello"}));
+	"title": "Hello"
+}));
 ```
 
 ## Backbone.Network
@@ -246,13 +279,13 @@ Backbone.Network is an abstraction of jQuery.ajax. It was designed for the conne
 
 You can configure where Backbone.Network will, by default, be able to get information from.
 
-```
+```javascript
 Backbone.Network.setUrl('/api'); 
 ```
 
 **Backbone.Network simple query :**
 
-```
+```javascript
 // Backbone.Network.put || 
 // Backbone.Network.post ||
 // Backbone.Network.delete ||
@@ -261,21 +294,22 @@ Backbone.Network.setUrl('/api');
 Backbone.Network.get(opts, context, callback);
 ```
 
-```
+```javascript
 Backbone.Network.get({ // Is equal to $.ajax
 	'url': "/version", // or "http://localhost:2000/api/version", both are usable
 	'dataType': "application/json",
 	'contentType': "application/json",
 	'data': {'_apiKey': "bouh"}
 }, function (err, res) {
-	console.log(arguments);	});
+	console.log(arguments);	
+});
 ```
 
 **Backbone.Network json query :**
 
 You can use the JSON version. All is already pre-configured for the kind of request.
 
-```
+```javascript
 // Backbone.Network.putJSON || 
 // Backbone.Network.postJSON ||
 // Backbone.Network.deleteJSON ||
@@ -284,7 +318,7 @@ You can use the JSON version. All is already pre-configured for the kind of requ
 Backbone.Network.getJSON(opts, context, callback);
 ```
 
-```
+```javascript
 // Backbone.Network.putJSON || 
 // Backbone.Network.postJSON ||
 // Backbone.Network.deleteJSON ||
@@ -292,7 +326,8 @@ Backbone.Network.getJSON({ // Is equal to $.ajax
 	'url': "/version", // or "http://localhost:2000/api/version", both are usable
 	'data': {'_apiKey': "bouh"}
 }, function (err, res) {
-	console.log(arguments);	});
+	console.log(arguments);	
+});
 ```
 
 ## Backbone.Keyboard
@@ -303,7 +338,7 @@ Backbone.Keyboard allow you to declare an action to execute when a keyboard shor
 
 This method starts to listen to the keyboard.
 
-```
+```javascript
 Backbone.Keyboard.start();
 ```
 
@@ -311,7 +346,7 @@ Backbone.Keyboard.start();
 
 This method stops to listen to the keyboard.
 
-```
+```javascript
 Backbone.Keyboard.stop();
 ```
 
@@ -319,7 +354,7 @@ Backbone.Keyboard.stop();
 
 Backbone.Keyboard is based on Backbone.Event you can listening the commands easily :
 
-```
+```javascript
 Backbone.keyboard.start();
 Backbone.keyboard.on('Shift+V', function (e) {
 	e.preventDefault();
@@ -335,7 +370,7 @@ Backbone.Cookie allow you to manage the Cookie very easily.
 
 Return the cookie if exists. Otherwise, return ```null```.
 
-```
+```javascript
 var cookie = Backbone.Cookie.get('_session');
 console.log(cookie ? 'exists' : 'doesn\'t exist');
 ```
@@ -344,7 +379,7 @@ console.log(cookie ? 'exists' : 'doesn\'t exist');
 
 Create and return the cookie if exists.
 
-```
+```javascript
 var cookie = Backbone.Cookie.new('_session');
 console.log(cookie.getName(), "=", cookie.getValue());
 ```
@@ -354,7 +389,7 @@ The Backbone.Cookie return an instance "Cookie".
 
 **Cookie : getting and setting **
 
-```
+```javascript
 var cookie = Backbone.Cookie.new('_session');
 console.log(cookie.getName(), "=", cookie.getValue()); // = '_session : '
 cookie.setValue('Bouh'); // Change temporary the value
@@ -364,13 +399,13 @@ console.log(cookie.getName(), "=", cookie.getValue()); // = '_session : Bouh'
 
 You can re-read the cookie simply :
 
-```
+```javascript
 cookie.update(); // update the information from the current cookie
 ```
 
 And if you would like to remove it :
 
-```
+```javascript
 cookie = cookie.remove(); // null
 ```
 
@@ -385,7 +420,7 @@ The communication between them works like a walkie-talkie.
 
 Example :
 
-```
+```javascript
 // Main Window - examples/windowCommunicator/public/src/run.js
 $('button').click(function () {
     var subWindow = Backbone.Window.newWindow();
@@ -461,9 +496,9 @@ This function will evaluate the function ```funcToEvaluate``` in the sub window.
 
 Example :
 
-```
+```javascript
 subWindow.send(function (callback) {
-	// This code will be evaluate on the sub-window
+	// This code will be evaluate in the sub-window
 	 callback(
 		$('[data-target="sentence"]').html() // Sentence
 	);
@@ -478,7 +513,7 @@ subWindow.send(function (callback) {
 
 Example :
 
-```
+```javascript
 // Main Window - examples/windowCommunicator/public/src/run.popup.js
 $(document).ready(function () {
 	var mainWindow = Backbone.Window.newCommunicator();
@@ -495,7 +530,7 @@ $(document).ready(function () {
 **BBWindowCommunicator.start() :**
 
 This method will start the communication and wait for a "connection" from the main window.
-```
+```javascript
 var mainWindow = Backbone.Window.newCommunicator();
 mainWindow.start();
 ```
@@ -504,7 +539,7 @@ mainWindow.start();
 
 This method is equal to ```trigger``` of Backbone.Events.
 
-```
+```javascript
 var mainWindow = Backbone.Window.newCommunicator();
 mainWindow.start();
 mainWindow.talk('filePercentage', '80');
