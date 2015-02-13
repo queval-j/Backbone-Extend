@@ -230,6 +230,12 @@
 				this.close();
 				onError = onError || onDone;
 				var loader = this.toJSON();
+				loader = {
+					'dataType': loader.dataType,
+					'type': loader.type,
+					'url': loader.url
+					// , 'onDone': loader.onDone
+				};
 				var type = loader.type,
 					dataType = loader.dataType.toLowerCase();
 				if (dataType === 'json') {
