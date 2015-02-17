@@ -380,8 +380,8 @@
 		if (!(opts['url'].indexOf('http://') === 0 ||
 			opts['url'].indexOf('https://') === 0))
 			opts['url'] = this.__url + (opts['url'] || '');
-		if (opts['type'] != 'GET' && (opts['contentType'] && opts['contentType'] == 'application/json'))
-		 	opts['data'] = JSON.stringify(opts['data']);
+		// if (opts['type'] != 'GET' && (opts['contentType'] && opts['contentType'] == 'application/json'))
+		//  	opts['data'] = JSON.stringify(opts['data']);
 		$.ajax({
 			'url': opts['url'],
 			'type': opts['type'],
