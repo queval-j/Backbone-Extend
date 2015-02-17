@@ -234,7 +234,7 @@
 					'dataType': loader.dataType,
 					'type': loader.type,
 					'url': loader.url
-					// , 'onDone': loader.onDone
+					, 'onDone': loader.onDone
 				};
 				var type = loader.type,
 					dataType = loader.dataType.toLowerCase();
