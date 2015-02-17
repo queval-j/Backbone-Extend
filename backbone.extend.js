@@ -383,14 +383,14 @@
 		
 		if (opts['type'] != 'GET' && (opts['contentType'] && opts['contentType'] == 'application/json'))
 		 	opts['data'] = JSON.stringify(opts['data']);
-		 
+
 		$.ajax({
 			'url': opts['url'],
 			'type': opts['type'],
 			'data': opts['data'],
+			'contentType': opts['contentType'] || undefined,
 			'dataType': opts['dataType'] || undefined
 		})
-		
 		.done(function (res) {
 			callback.apply(ctx || this, [null, res]);
 		}).fail(function () {
