@@ -7,6 +7,7 @@
 		console.error('Underscore is not loaded !');
 		return;
 	}
+	Backbone.BEVERSION = '0.3.0';
 	// Initialize
 	// - Backbone.Application
 	// - Backbone.Keyboard
@@ -360,6 +361,16 @@
 		return (_.template(guess)(hash));
 	};
 
+	var BackboneTemplateSave = Backbone.Template;
+
+	Backbone.Template.prototype.new = function (url) {
+		var instance = new BackboneTemplateSave();
+		if (_.isString(url)) {
+			instance.setUrl(url);
+		}
+		return (instance);
+	};
+
 	Backbone.Template = new Backbone.Template();
 
 	// Backbone.Network
@@ -419,6 +430,16 @@
 			Backbone.Network.query(opts, callback, context);
 		};
 	});
+
+	var BackboneNetworkSaveReference = Backbone.Network;
+
+	Backbone.Network.prototype.new = function (url) {
+		var instance = new BackboneNetworkSaveReference();
+		if (_.isString(url)) {
+			istance.setUrl(url);
+		}
+		return (instance);
+	};
 
 	Backbone.Network = new Backbone.Network();
 

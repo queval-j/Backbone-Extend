@@ -1,5 +1,5 @@
-Backbone-Extend
-===============
+Backbone-Extend (0.3.1)
+=======================
 
 Backbon-extend provides new features in order to enhance the Web Applications made with Backbone (https://github.com/jashkenas/backbone).
 
@@ -271,6 +271,17 @@ this.$el.html(Backbone.Template.compile('index.html', { // Working only if the t
 }));
 ```
 
+**Backbone.Template.new(```url```) :**
+
+You can create an instance in order to download template form different location (the ```url``` argument is optional). *Warning : the cached system is not centralized at the moment. *
+
+```javascript
+var myFirstLocation = Backbone.Template.new('/templates/dashboard');
+var mySecondLocation = Backbone.Template.new();
+mySecondLocation.setUrl('/templates/login'); // set the URL after
+```
+
+
 ## Backbone.Network
 
 Backbone.Network is an abstraction of jQuery.ajax. It was designed for the connection between an API (*server*) and the Web Application (*client*).
@@ -328,6 +339,16 @@ Backbone.Network.getJSON({ // Is equal to $.ajax
 }, function (err, res) {
 	console.log(arguments);	
 });
+```
+
+**Backbone.Network.new(```url```) :**
+
+You can create an instance in order to managed different network (the ```url``` argument is optional).
+
+```javascript
+var myFirstApi = Backbone.Network.new('/api/v1');
+var mySecondApi = Backbone.Network.new();
+mySecondApi.setUrl('/api/v2'); // set the URL after
 ```
 
 ## Backbone.Keyboard
