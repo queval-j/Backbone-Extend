@@ -157,7 +157,7 @@ Backbone.Page give an event system that you can use to know information like : w
 App.Pages.Homepage = Backbone.Page.extend({
 	init: function (opts) {
 		this.getEvents().on('show', this._show, this); // this.show is already used by Backbone.Page
-		this.getEvents().on('hide, this._hide, this); // this.hide is already used by Backbone.Page
+		this.getEvents().on('hide', this._hide, this); // this.hide is already used by Backbone.Page
 	},
 	_show: function () {
 		console.log('show');
