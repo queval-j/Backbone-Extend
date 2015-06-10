@@ -7,7 +7,7 @@
 		console.error('Underscore is not loaded !');
 		return;
 	}
-	Backbone.BEVERSION = '0.3.0';
+	Backbone.BEVERSION = '0.3.1';
 	// Initialize
 	// - Backbone.Application
 	// - Backbone.Keyboard
