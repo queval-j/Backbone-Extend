@@ -351,6 +351,18 @@ var mySecondApi = Backbone.Network.new();
 mySecondApi.setUrl('/api/v2'); // set the URL after
 ```
 
+**Backbone.Network.addMiddleware(```func```) :**
+
+You can add middlewares in order to add (or remove) information of the options send to jQuery.
+
+```javascript
+Backbone.Network.addMiddleware(function (Request, next) {
+	Request.options['url'] = Request.options['url']+'?token=1234';
+	next();
+});
+```
+
+
 ## Backbone.Keyboard
 
 Backbone.Keyboard allow you to declare an action to execute when a keyboard shortcut has been did.

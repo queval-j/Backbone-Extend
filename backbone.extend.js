@@ -379,6 +379,7 @@
 	// - setUrl(url)
 	Backbone.Network = function () {
 		this.__url = "/";
+		this.__middleware = [];
 	};
 
 	Backbone.Network.prototype.setUrl = function (url) {
@@ -394,19 +395,38 @@
 		
 		if (opts['type'] != 'GET' && (opts['contentType'] && opts['contentType'] == 'application/json'))
 		 	opts['data'] = JSON.stringify(opts['data']);
-
-		$.ajax({
+		opts = {
 			'url': opts['url'],
 			'type': opts['type'],
 			'data': opts['data'],
 			'contentType': opts['contentType'] || undefined,
 			'dataType': opts['dataType'] || undefined
-		})
-		.done(function (res) {
-			callback.apply(ctx || this, [null, res]);
-		}).fail(function () {
-			callback.apply(ctx || this, arguments);
-		});
+		};
+
+		var exec_stack = this.__middleware.slice(0);
+		var Request = {
+			options: opts
+		};
+
+		var callbackEnd = (function (request, next) {
+			$.ajax(request.options)
+			.done(function (res) {
+				callback.apply(ctx || this, [null, res]);
+			}).fail(function () {
+				callback.apply(ctx || this, arguments);
+			});
+		}).bind(this);
+
+		exec_stack.push(callbackEnd);
+
+		var next = function () {
+			if (exec_stack.length == 0) return;
+
+			var callbackFunc = exec_stack.shift();
+			callbackFunc(Request, next);
+		};
+
+		next();
 	};
 
 	var methods = ['get', 'post', 'put', 'delete'];
@@ -430,6 +450,11 @@
 			Backbone.Network.query(opts, callback, context);
 		};
 	});
+
+	Backbone.Network.prototype.addMiddleware = function (middlewareFunction) {
+		this.__middleware.push(middlewareFunction);
+		return (this);
+	};
 
 	var BackboneNetworkSaveReference = Backbone.Network;
 
