@@ -362,14 +362,30 @@
 	};
 
 	var BackboneTemplateSave = Backbone.Template;
+	(function () {
+		var BackboneTemplateCollection = new Backbone.Collection();
 
-	Backbone.Template.prototype.new = function (url) {
-		var instance = new BackboneTemplateSave();
-		if (_.isString(url)) {
-			instance.setUrl(url);
-		}
-		return (instance);
-	};
+		Backbone.Template.prototype.new = function (name, url) {
+			var instance = new BackboneTemplateSave();
+			BackboneTemplateCollection.add({
+				'name': name,
+				'instance': instance
+			});
+			if (_.isString(url)) {
+				instance.setUrl(url);
+			}
+			return (instance);
+		};
+
+		Backbone.Template.prototype.new = function (name, url) {
+			var instance = BackboneTemplateCollection.find(function (elm) {
+				return (elm.get('name') === name);
+			});
+			if (_.isObject(instance))
+				return (instance.get('instance'));
+			return (null);
+		};
+	});
 
 	Backbone.Template = new Backbone.Template();
 
@@ -457,14 +473,30 @@
 	};
 
 	var BackboneNetworkSaveReference = Backbone.Network;
+	(function () {
+		var BackboneNetworkCollection = new Backbone.Collection();
+		Backbone.Network.prototype.new = function (name, url) {
+			var instance = new BackboneNetworkSaveReference();
+			BackboneNetworkCollection.add({
+				'name': name,
+				'instance': instance
+			});
+			if (_.isString(url)) {
+				instance.setUrl(url);
+			}
+			return (instance);
+		};
 
-	Backbone.Network.prototype.new = function (url) {
-		var instance = new BackboneNetworkSaveReference();
-		if (_.isString(url)) {
-			istance.setUrl(url);
-		}
-		return (instance);
-	};
+		Backbone.Network.prototype.getInstance = function (name) {
+			var instance = BackboneNetworkCollection.find(function (elm) {
+				console.log(elm);
+				return (elm.get('name') === name);
+			});
+			if (_.isObject(instance))
+				return (instance.get('instance'));
+			return (null);
+		};
+	})();
 
 	Backbone.Network = new Backbone.Network();
 

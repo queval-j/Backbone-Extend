@@ -271,14 +271,24 @@ this.$el.html(Backbone.Template.compile('index.html', { // Working only if the t
 }));
 ```
 
-**Backbone.Template.new(```url```) :**
+**Backbone.Template.new(```name```, ```url```) :**
 
-You can create an instance in order to download template form different location (the ```url``` argument is optional). *Warning : the cached system is not centralized at the moment. *
+You can create an instance in order to download template from different location (the ```url``` argument is optional). The ```name``` is going to allow you to retrieve your object from anywhere (see ```Backbone.Template.getInstance```)
 
 ```javascript
-var myFirstLocation = Backbone.Template.new('/templates/dashboard');
-var mySecondLocation = Backbone.Template.new();
+var myFirstLocation = Backbone.Template.new('dashboard', '/templates/dashboard');
+var mySecondLocation = Backbone.Template.new('login');
 mySecondLocation.setUrl('/templates/login'); // set the URL after
+```
+
+**Backbone.Template.getInstance(```name```) :**
+The getInstance method allows you to get the instance named at the creation.
+
+***Warning : If there are multiple instance with the same name, the method's going to get the first one.***
+
+```javascript
+var myFirstLocation = Backbone.Template.getInstance('dashboard');
+var mySecondLocation = Backbone.Template.getInstance('login');
 ```
 
 
@@ -341,14 +351,25 @@ Backbone.Network.getJSON({ // Is equal to $.ajax
 });
 ```
 
-**Backbone.Network.new(```url```) :**
+**Backbone.Network.new(```name```, ```url```) :**
 
 You can create an instance in order to managed different network (the ```url``` argument is optional).
 
 ```javascript
-var myFirstApi = Backbone.Network.new('/api/v1');
-var mySecondApi = Backbone.Network.new();
+var myFirstApi = Backbone.Network.new('api', '/api/v1');
+var mySecondApi = Backbone.Network.new('api_other', 'http://my-other-ip.com/api/');
 mySecondApi.setUrl('/api/v2'); // set the URL after
+```
+
+**Backbone.Network.getInstance(```func```) :**
+
+The getInstance method allows you to get the instance named at the creation.
+
+***Warning : If there are multiple instance with the same name, the method's going to get the first one.***
+
+```javascript
+var myFirstApi = Backbone.Network.getInstance('api');
+var mySecondApi = Backbone.Network.getInstance('api_other');
 ```
 
 **Backbone.Network.addMiddleware(```func```) :**
@@ -356,7 +377,9 @@ mySecondApi.setUrl('/api/v2'); // set the URL after
 You can add middlewares in order to add (or remove) information of the options send to jQuery.
 
 ```javascript
-Backbone.Network.addMiddleware(function (Request, next) {
+var myFirstApi = Backbone.Network.getInstance('api');
+
+myFirstApi.addMiddleware(function (Request, next) {
 	Request.options['url'] = Request.options['url']+'?token=1234';
 	next();
 });
