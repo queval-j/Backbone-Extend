@@ -364,7 +364,6 @@
 	var BackboneTemplateSave = Backbone.Template;
 	(function () {
 		var BackboneTemplateCollection = new Backbone.Collection();
-
 		Backbone.Template.prototype.new = function (name, url) {
 			var instance = new BackboneTemplateSave();
 			BackboneTemplateCollection.add({
@@ -377,7 +376,7 @@
 			return (instance);
 		};
 
-		Backbone.Template.prototype.new = function (name, url) {
+		Backbone.Template.prototype.getInstance = function (name, url) {
 			var instance = BackboneTemplateCollection.find(function (elm) {
 				return (elm.get('name') === name);
 			});
@@ -385,7 +384,7 @@
 				return (instance.get('instance'));
 			return (null);
 		};
-	});
+	})();
 
 	Backbone.Template = new Backbone.Template();
 
@@ -489,7 +488,6 @@
 
 		Backbone.Network.prototype.getInstance = function (name) {
 			var instance = BackboneNetworkCollection.find(function (elm) {
-				console.log(elm);
 				return (elm.get('name') === name);
 			});
 			if (_.isObject(instance))
