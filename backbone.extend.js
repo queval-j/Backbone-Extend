@@ -7,7 +7,7 @@
 		console.error('Underscore is not loaded !');
 		return;
 	}
-	Backbone.BEVERSION = '0.3.1';
+	Backbone.BEVERSION = '0.3.2';
 	// Initialize
 	// - Backbone.Application
 	// - Backbone.Keyboard
@@ -364,7 +364,6 @@
 	var BackboneTemplateSave = Backbone.Template;
 	(function () {
 		var BackboneTemplateCollection = new Backbone.Collection();
-
 		Backbone.Template.prototype.new = function (name, url) {
 			var instance = new BackboneTemplateSave();
 			BackboneTemplateCollection.add({
@@ -377,7 +376,7 @@
 			return (instance);
 		};
 
-		Backbone.Template.prototype.new = function (name, url) {
+		Backbone.Template.prototype.getInstance = function (name, url) {
 			var instance = BackboneTemplateCollection.find(function (elm) {
 				return (elm.get('name') === name);
 			});
@@ -385,7 +384,7 @@
 				return (instance.get('instance'));
 			return (null);
 		};
-	});
+	})();
 
 	Backbone.Template = new Backbone.Template();
 
@@ -455,7 +454,7 @@
 			opts['type'] = method.toUpperCase();
 			opts['dataType'] = "json";
 			opts['contentType']="application/json";
-			Backbone.Network.query(opts, callback, context);
+			this.query(opts, callback, context);
 		};
 		Backbone.Network.prototype[method] = function (opts, context, callback) {
 			if (typeof context === 'function') {
@@ -463,7 +462,7 @@
 				context = null;
 			}
 			opts['type'] = method.toUpperCase();
-			Backbone.Network.query(opts, callback, context);
+			this.query(opts, callback, context);
 		};
 	});
 
@@ -489,7 +488,6 @@
 
 		Backbone.Network.prototype.getInstance = function (name) {
 			var instance = BackboneNetworkCollection.find(function (elm) {
-				console.log(elm);
 				return (elm.get('name') === name);
 			});
 			if (_.isObject(instance))
