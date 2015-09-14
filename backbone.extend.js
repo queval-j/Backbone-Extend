@@ -7,7 +7,10 @@
 		console.error('Underscore is not loaded !');
 		return;
 	}
-	Backbone.BEVERSION = '0.3.2';
+
+	Backbone.BEVERSION = '0.3.3';
+
+	var BBECurrentCid = null;
 	// Initialize
 	// - Backbone.Application
 	// - Backbone.Keyboard
@@ -33,7 +36,9 @@
 			"template": "/templates"
 		};
 	};
+
 	Backbone.Application.prototype = _.extend(Backbone.Application.prototype, Backbone.Events);
+
 	Backbone.Application.prototype.attachApp = function (app, appCallback) {
 		if (app && app[appCallback] && _.isFunction(app[appCallback])) {
 			this.__app = app;
@@ -98,6 +103,10 @@
 		return loadFunc();
 	};
 
+	Backbone.Application.prototype.getCurrentView = function() {
+		return (BBECurrentCid);
+	};
+
 	Backbone.Application = new Backbone.Application();
 
 	// Backbone.Page
@@ -130,7 +139,8 @@
 
 			Backbone.Application.on('BackboneExtend::newView', function (cid) {
 				if (cid != self.cid)
-					self.hide();
+					return (self.hide());
+				BBECurrentCid = self.cid;
 			});
 		},
 		initialize: function (opts) {
@@ -139,6 +149,9 @@
 			this.initForAll.apply(this, arguments);
 			this.init.apply(this, arguments);
 			this.hide();
+		},
+		isCurrentView: function () {
+			return (Application.getCurrentView() === this.cid);
 		},
 		isShow: function () {
 			return (this.__pages._visible);
