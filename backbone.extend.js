@@ -437,12 +437,13 @@
 		};
 
 		var callbackEnd = (function (request, next) {
-			$.ajax(request.options)
+			var x = $.ajax(request.options)
 			.done(function (res) {
 				callback.apply(ctx || this, [null, res]);
 			}).fail(function () {
 				callback.apply(ctx || this, arguments);
 			});
+			return (x);
 		}).bind(this);
 
 		exec_stack.push(callbackEnd);
@@ -451,10 +452,10 @@
 			if (exec_stack.length == 0) return;
 
 			var callbackFunc = exec_stack.shift();
-			callbackFunc(Request, next);
+			return (callbackFunc(Request, next));
 		};
 
-		next();
+		return (next());
 	};
 
 	var methods = ['get', 'post', 'put', 'delete'];
@@ -467,7 +468,7 @@
 			opts['type'] = method.toUpperCase();
 			opts['dataType'] = "json";
 			opts['contentType']="application/json";
-			this.query(opts, callback, context);
+			return (this.query(opts, callback, context));
 		};
 		Backbone.Network.prototype[method] = function (opts, context, callback) {
 			if (typeof context === 'function') {
@@ -475,7 +476,7 @@
 				context = null;
 			}
 			opts['type'] = method.toUpperCase();
-			this.query(opts, callback, context);
+			return (this.query(opts, callback, context));
 		};
 	});
 
@@ -627,6 +628,10 @@
 		new: function (name) {
 			return (name ? new Cookie(name) : null);
 		},
+		save: function (name, value, time) {
+			var cookie = new Cookie(name, value);
+			cookie.save(time);
+		},
 		read: function (name) {
 			name += "=";
 			var cookies = document.cookie.split(';'),
@@ -637,6 +642,7 @@
 			}
 			return (null);
 		}
+
 	};
 
 	Cookie.prototype._read = Backbone.Cookie.read;
