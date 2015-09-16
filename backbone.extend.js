@@ -8,7 +8,7 @@
 		return;
 	}
 
-	Backbone.BEVERSION = '0.3.3';
+	Backbone.BEVERSION = '0.3.6';
 
 	var BBECurrentCid = null;
 	// Initialize
@@ -107,6 +107,12 @@
 		return (BBECurrentCid);
 	};
 
+	Backbone.Application.prototype.setCurrentView = function(page) {
+		BBECurrentCid = page.cid;
+		return this;
+	};
+
+
 	Backbone.Application = new Backbone.Application();
 
 	// Backbone.Page
@@ -160,6 +166,7 @@
 			return (!this.__pages._visible);
 		},
 		show: function () {
+			Backbone.Application.setCurrentView(this);
 			if (this.__pages._visible) {
 				this.getEvents().trigger('show');
 				return (this);
