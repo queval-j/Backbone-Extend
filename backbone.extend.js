@@ -151,7 +151,7 @@
 			this.hide();
 		},
 		isCurrentView: function () {
-			return (Application.getCurrentView() === this.cid);
+			return (Backbone.Application.getCurrentView() === this.cid);
 		},
 		isShow: function () {
 			return (this.__pages._visible);
