@@ -277,7 +277,7 @@
 				});
 			}
 		});
-		
+
 		var DataCollection = Backbone.Collection.extend({
 			model: DataModel
 		});
@@ -427,7 +427,7 @@
 		if (!(opts['url'].indexOf('http://') === 0 ||
 			opts['url'].indexOf('https://') === 0))
 			opts['url'] = this.__url + (opts['url'] || '');
-		
+
 		if (opts['type'] != 'GET' && (opts['contentType'] && opts['contentType'] == 'application/json'))
 		 	opts['data'] = JSON.stringify(opts['data']);
 		opts = {
@@ -660,7 +660,7 @@
 	// - open - like window.open but return a BBWindow
 
 	// BBWindow :
-	// 
+	//
 	// - on('load') = onload
 	// - isOpen() = bool
 	// - isClose() = bool
@@ -679,7 +679,7 @@
 
 		BBWindow.prototype = _.extend(BBWindow.prototype, Backbone.Events);
 
-		BBWindow.prototype.open = function () {			// 
+		BBWindow.prototype.open = function () {			//
 			var self = this;
 			// Initialization
 			this._window = window.open.apply(window, arguments);
@@ -693,7 +693,7 @@
 				alreadyDone = true;
 				self.startCommunication(function (err) {
 					self._terminated = self.isOpen(); // close ?
-					if (!err && self.isActive()) {
+					if (!err && self._communicator) {
 						self._communicator.on('all', function () {
 							var args = Array.prototype.slice.call(arguments);
 							var e = args.shift();
@@ -750,7 +750,7 @@
 		BBWindow.prototype.close = function () {
 			if (this._window)
 				this._window.close();
-			
+
 			this._terminated = true;
 			this._window = undefined;
 			return (true);
@@ -774,9 +774,9 @@
 			this._communicator.once('evaluate:'+msg.ticket, function (args) {
 				msg.callback.apply(msg.ctx, arguments)
 			});
-			
+
 			this._communicator.trigger(
-				'evaluate', 
+				'evaluate',
 				msg.message.toString(),
 				msg.ticket
 			);
@@ -797,7 +797,7 @@
 		BBWindowCommunicator.prototype = _.extend(BBWindowCommunicator.prototype, Backbone.Events);
 
 		BBWindowCommunicator.prototype.init = function () {
-			window.BBCommunicator = this;			
+			window.BBCommunicator = this;
 			this.on('evaluate', function (toEval, id) {
 				if (!_.isString(toEval))
 					return;
@@ -837,11 +837,11 @@
 	})(Backbone, window);
 
 	// Backbone.Services
-	// 
+	//
 	// - addService('module.html')
 	// - getService('name')
 	// - load(callback)
-	// 
+	//
 	(function (Backbone) {
 		String.prototype.capitalizeFirstLetter = function() {
 			return (this.charAt(0).toUpperCase() + this.slice(1));
@@ -1087,4 +1087,3 @@
 	})(Backbone);
 
 })(window.Backbone, window._);
-

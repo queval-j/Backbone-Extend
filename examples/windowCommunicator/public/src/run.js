@@ -1,7 +1,7 @@
 $('button').click(function () {
     var subWindow = Backbone.Window.newWindow();
 
-    subWindow.once('load', function () {
+    subWindow.once('started', function () {
     	// Evaluate code
         subWindow.send(function (callback) {
         	// This code will be evaluate on the sub-window
@@ -14,18 +14,20 @@ $('button').click(function () {
             	.css('color', 'black')
             	.html('Message : '+sentence);
         });
-        subWindow.on('closed', function () {
-        	$('[data-target="here"]')
-        		.css('color', 'green')
-        		.html('The sub-window was closed');
-        });
-        subWindow.on('closeMe', function (time) {
-        	console.log('Sub-Window will be close in', time, 'milliseconds.');
-        	setTimeout(function () {
-        		subWindow.close();
-        	}, +time)
-        });
         console.log('Main windows is now communicating with the sub-window.');
+    });
+
+    subWindow.on('closed', function () {
+        $('[data-target="here"]')
+            .css('color', 'green')
+            .html('The sub-window was closed');
+    });
+
+    subWindow.on('closeMe', function (time) {
+        console.log('Sub-Window will be close in', time, 'milliseconds.');
+        setTimeout(function () {
+            subWindow.close();
+        }, +time)
     });
 
     subWindow.on('failed', function () {
