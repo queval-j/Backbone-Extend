@@ -1,0 +1,20 @@
+{
+  "name": "Backbone-Extend",
+  "homepage": "https://github.com/queval-j/Backbone-Extend",
+  "authors": [
+    "Jean-Christoph Queval - Bourgeois <jc.queval@gmail.com>"
+  ],
+  "description": "Backbone Extend add new components to the famous Backbone library.",
+  "main": "backbone.extend.js",
+  "license": "GPL-3.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "backbone": "^1.3.3"
+  }
+}

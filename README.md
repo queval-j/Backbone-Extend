@@ -1,7 +1,13 @@
 Backbone-Extend (0.3.1)
 =======================
 
-Backbon-extend provides new features in order to enhance the Web Applications made with Backbone (https://github.com/jashkenas/backbone).
+Backbone-extend provides new features in order to enhance the Web Applications made with Backbone (https://github.com/jashkenas/backbone).
+
+**Bower**
+
+```
+bower install backbone-extend
+```
 
 ## Backbone.Application
 
@@ -190,7 +196,7 @@ var entityOptions = {
 	}
 };
 
-Backbone.Data.set(''articles", entityOptions); // Backbone.Data will now take to give us the synced data.
+Backbone.Data.set("articles", entityOptions); // Backbone.Data will now take to give us the synced data.
 ```
 
 ***Seconds step :*** Getting the data
