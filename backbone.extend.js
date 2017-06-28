@@ -417,6 +417,8 @@
 		this.__middleware = [];
 	};
 
+	Backbone.Network.prototype = _.extend(Backbone.Network.prototype, Backbone.Events);
+
 	Backbone.Network.prototype.setUrl = function (url) {
 		this.__url = url;
 		return (this);
@@ -446,8 +448,10 @@
 		var callbackEnd = (function (request, next) {
 			var x = $.ajax(request.options)
 			.done(function (res) {
+				self.trigger('done', res);
 				callback.apply(ctx || this, [null, res]);
 			}).fail(function () {
+				self.trigger('fail', res);
 				callback.apply(ctx || this, arguments);
 			});
 			return (x);
