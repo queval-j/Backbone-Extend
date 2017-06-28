@@ -444,7 +444,7 @@
 		var Request = {
 			options: opts
 		};
-
+		var self = this;
 		var callbackEnd = (function (request, next) {
 			var x = $.ajax(request.options)
 			.done(function (res) {
