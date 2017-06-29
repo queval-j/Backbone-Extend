@@ -424,6 +424,10 @@
 		return (this);
 	};
 
+	Backbone.Network.prototype.getUrl = function (url) {
+		return (this.__url);
+	};
+
 	Backbone.Network.prototype.query = function (opts, callback, ctx) {
 		if (!opts['url']) return callback('Error: no url provided');
 		if (!(opts['url'].indexOf('http://') === 0 ||
