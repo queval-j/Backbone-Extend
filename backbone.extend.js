@@ -145,7 +145,7 @@
 			};
 
 			Backbone.Application.on('BackboneExtend::newView', function (cid, pageSource) {
-				if (pageSource.replace && cid != self.cid)
+				if (pageSource.__pages.replace && cid != self.cid)
 					return (self.hide());
 				BBECurrentCid = self.cid;
 			});
