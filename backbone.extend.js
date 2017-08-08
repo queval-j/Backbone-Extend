@@ -141,10 +141,11 @@
 				, app: opts['app'] || null
 				, e: _.extend({}, Backbone.Events)
 				, __location: []
+				, replace: opts['replace'] ?  opts['replace'] : true
 			};
 
-			Backbone.Application.on('BackboneExtend::newView', function (cid) {
-				if (cid != self.cid)
+			Backbone.Application.on('BackboneExtend::newView', function (cid, pageSource) {
+				if (pageSource.replace && cid != self.cid)
 					return (self.hide());
 				BBECurrentCid = self.cid;
 			});
@@ -173,7 +174,7 @@
 			}
 			this.$el.show(0);
 			this.__pages._visible = true;
-			Backbone.Application.trigger('BackboneExtend::newView', this.cid);
+			Backbone.Application.trigger('BackboneExtend::newView', this.cid, this);
 			this.getEvents().trigger('show');
 			return (this);
 		},
