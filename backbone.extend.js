@@ -141,11 +141,11 @@
 				, app: opts['app'] || null
 				, e: _.extend({}, Backbone.Events)
 				, __location: []
-				, replace: opts['replace'] ?  opts['replace'] : true
+				, replace: typeof opts.replace !== 'undefined' ?  opts['replace'] : true
 			};
 
 			Backbone.Application.on('BackboneExtend::newView', function (cid, pageSource) {
-				if (pageSource.replace && cid != self.cid)
+				if (pageSource.__pages.replace && cid != self.cid)
 					return (self.hide());
 				BBECurrentCid = self.cid;
 			});
