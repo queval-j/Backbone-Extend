@@ -455,8 +455,8 @@
 			.done(function (res) {
 				self.trigger('done', res);
 				callback.apply(ctx || this, [null, res]);
-			}).fail(function () {
-				self.trigger('fail', res);
+			}).fail(function (jqXHR, textStatus, errorThrown) {
+				self.trigger('fail', jqXHR, textStatus, errorThrown);
 				callback.apply(ctx || this, arguments);
 			});
 			return (x);
